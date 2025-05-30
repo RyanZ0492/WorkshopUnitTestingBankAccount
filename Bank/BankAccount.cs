@@ -5,7 +5,6 @@ namespace BankAccountNS
     /// <summary>
     /// Bank account demo class.
     /// </summary>
-
     public class BankAccount
     {
         public const string DebitAmountExceedsBalanceMessage = "Debit amount exceeds balance";
