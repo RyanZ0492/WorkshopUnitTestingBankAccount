@@ -1,0 +1,34 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch full history
+          ref: ${{ github.ref }}  # Checkout the branch that triggered the workflow
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout all branches
+        run: |
+          for branch in $(git branch -r | grep -v '\->' | sed 's/origin\///'); do
+            git checkout $branch || git checkout -b $branch origin/$branch;
+          done
+
+      - name: Add GitLab remote
+        run: git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@git.fhict.nl/I563117/bingebuddy.git
+
+      - name: Push all branches to GitLab
+        run: git push --force --all gitlab
+
+      - name: Push tags to GitLab
+        run: git push --force --tags gitlab
